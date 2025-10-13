@@ -2,7 +2,8 @@
 import Silk from "@/components/Silk";
 import Dock from "@/components/Dock";
 import ShinyText from "@/components/ShinyText";
-import CardSwap, { Card } from "@/components/CardSwap";
+import CardSwap from "@/components/CardSwap";
+import { Card } from "@/components/CardSwap";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { VscHome, VscArchive, VscAccount, VscSettingsGear } from "react-icons/vsc";
 
@@ -65,26 +66,44 @@ export default function Home(){
 
       {/* CardSwap Section */}
       <section className="relative h-screen flex items-center justify-center px-6">
-        <div style={{ height: '600px', position: 'relative' }}>
-          <CardSwap
-            cardDistance={60}
-            verticalDistance={70}
-            delay={5000}
-            pauseOnHover={false}
-          >
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">
-              <h3 className="text-xl font-bold mb-2 text-white">Task Management</h3>
-              <p className="text-white/80">Organize your tasks efficiently</p>
-            </Card>
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">
-              <h3 className="text-xl font-bold mb-2 text-white">Team Collaboration</h3>
-              <p className="text-white/80">Work together seamlessly</p>
-            </Card>
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">
-              <h3 className="text-xl font-bold mb-2 text-white">Analytics & Insights</h3>
-              <p className="text-white/80">Track your productivity</p>
-            </Card>
-          </CardSwap>
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Text content */}
+          <div className="text-center lg:text-left">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6">
+              get to know about tasket.
+            </h2>
+           
+            <p className="text-xl sm:text-2xl text-white/90 font-medium">
+              tasket is built on Numbers Protocol using ERC-7053 commits to turn every real-world task into a verifiable on-chain record.            </p>
+          </div>
+
+          {/* Right side - CardSwap */}
+          <div className="flex justify-center lg:justify-end">
+            <div style={{ height: '600px', position: 'relative' }}>
+              <>
+              <CardSwap
+                cardDistance={60}
+                verticalDistance={70}
+                delay={5000}
+                pauseOnHover={false}
+              >
+                
+                <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">
+                  <h3 className="text-xl font-bold mb-2 text-white">Step 1</h3>
+                  <p className="text-white/80">Find your job at tasket and post your jobs here. Your jobs are recorded onchain by Numbers Protocol </p>
+                </Card>
+                <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">
+                  <h3 className="text-xl font-bold mb-2 text-white">Step 2</h3>
+                  <p className="text-white/80">Take the job you want to work and post your initial state of work and make a commit onchain easily.</p>
+                </Card>
+                <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">
+                  <h3 className="text-xl font-bold mb-2 text-white">Step 3</h3>
+                  <p className="text-white/80">After finshing your job make a last commit by posting up your work. These works are getting onchain recorded on Numbers Mainnet by Capture SDK.</p>
+                </Card>  
+              </CardSwap>
+              </>
+            </div>
+          </div>
         </div>
       </section>
     </main>

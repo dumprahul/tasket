@@ -5,14 +5,16 @@ import ShinyText from "@/components/ShinyText";
 import CardSwap from "@/components/CardSwap";
 import { Card } from "@/components/CardSwap";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
-import { VscHome, VscArchive, VscAccount, VscSettingsGear } from "react-icons/vsc";
+import { VscHome, VscAdd, VscSearch, VscCheck } from "react-icons/vsc";
+import { useRouter } from "next/navigation";
 
 export default function Home(){
+  const router = useRouter();
   const dockItems = [
-    { icon: <VscHome size={18} />, label: 'Home', onClick: () => alert('Home!') },
-    { icon: <VscArchive size={18} />, label: 'Archive', onClick: () => alert('Archive!') },
-    { icon: <VscAccount size={18} />, label: 'Profile', onClick: () => alert('Profile!') },
-    { icon: <VscSettingsGear size={18} />, label: 'Settings', onClick: () => alert('Settings!') },
+    { icon: <VscHome size={18} />, label: 'home', onClick: () => router.push('/') },
+    { icon: <VscAdd size={18} />, label: 'create job', onClick: () => router.push('/create-job') },
+    { icon: <VscSearch size={18} />, label: 'search job', onClick: () => router.push('/search-job') },
+    { icon: <VscCheck size={18} />, label: 'get receipt', onClick: () => router.push('/get-receipt') },
   ];
 
   return(
@@ -42,7 +44,7 @@ export default function Home(){
             <p className="mx-auto max-w-3xl text-balance text-xl font-medium text-white/90 sm:text-2xl md:text-3xl">every task gets it ticket.</p>
           </div>
 
-          <div className="flex flex-col items-center gap-12">
+          <div className="flex flex-col items-center gap-6">
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Dock 
                 items={dockItems}

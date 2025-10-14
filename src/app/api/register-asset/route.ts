@@ -6,6 +6,7 @@ import crypto from 'crypto'
 import { ethers } from 'ethers'
 import * as nit from '@numbersprotocol/nit'
 import mime from 'mime'
+import { getSupabaseServer } from '@/lib/supabase'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -89,6 +90,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Upstream error', details: txt }, { status: 502 })
     }
     const json = await resp.json()
+
+    // Persist to Supabase
+    try {
+      const supabase = getSupabaseServer()
+      const uploadedAt = new Date().toISOString()
+      await supabase.from('assets').insert({
+        nid: json?.id || null,
+        asset_file_name: json?.asset_file_name || file.name,
+        asset_file_mime_type: json?.asset_file_mime_type || asset_mime_type,
+        caption,
+        headline,
+        asset_timestamp_created: created_at,
+        creator_name: form.get('creatorName') || null,
+        uploaded_at: uploadedAt,
+      })
+    } catch (e) {
+      // do not fail the whole request if DB insert fails
+      console.warn('Supabase insert failed:', e)
+    }
+
     return NextResponse.json(json)
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'Unknown error' }, { status: 500 })

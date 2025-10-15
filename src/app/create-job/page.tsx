@@ -3,6 +3,8 @@ import Silk from "@/components/Silk";
 import { useState } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText, InputGroupButton } from '@/components/ui/input-group'
 import { Spinner } from '@/components/ui/spinner'
+import { Toaster } from '@/components/ui/sonner'
+import { toast } from 'sonner'
 
 export default function CreateJobPage(){
   const [file, setFile] = useState<File | null>(null)
@@ -28,7 +30,21 @@ export default function CreateJobPage(){
       const json = await res.json()
       if(!res.ok) throw new Error(json?.error || 'Failed')
       setResult(json)
+      console.log('Numbers asset created:', json)
       setSuccess(true)
+      const id = json?.id
+      if (id) {
+        const url = `https://verify.numbersprotocol.io/asset-profile/${id}`
+        toast('Asset registered', {
+          description: 'Open in Numbers Explorer',
+          action: {
+            label: 'Open',
+            onClick: () => window.open(url, '_blank')
+          }
+        })
+      } else {
+        toast('Asset registered')
+      }
     }catch(err:any){
       setResult({ error: err.message })
       setSuccess(false)
@@ -38,17 +54,21 @@ export default function CreateJobPage(){
   }
   return(
     <main className="relative min-h-[100svh] w-full overflow-hidden font-sans text-white">
+      <Toaster position="top-center" richColors />
       <div className="fixed inset-0 -z-10">
         <Silk speed={5} scale={1} color="#4F39E3" noiseIntensity={1.2} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.1),transparent_40%),radial-gradient(circle_at_50%_120%,rgba(0,0,0,0.35),transparent_50%)]" />
       </div>
 
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="w-full max-w-2xl space-y-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight">create job</h1>
-            <p className="text-white/90 text-lg sm:text-xl">Register an asset to get a Nid</p>
+      <div className="min-h-screen flex items-center px-6">
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          {/* Left panel: Heading & motto */}
+          <div className="text-left space-y-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight">create job</h1>
+            <p className="text-white/90 text-lg sm:text-xl md:text-2xl max-w-prose">Register an asset (image + proof) to mint a verifiable Nid on Numbers Protocol.</p>
           </div>
+
+          {/* Right panel: Form card */}
           <form onSubmit={onSubmit} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 space-y-6">
             <div className="space-y-2">
               <label className="block text-sm text-white/80">creator name</label>
@@ -101,15 +121,12 @@ export default function CreateJobPage(){
             </InputGroup>
           </form>
 
-          {loading && (
-            <div className="flex items-center justify-center gap-2 text-white/90"><Spinner /> <span>processing your registration…</span></div>
-          )}
-          {success && result && !result.error && (
-            <div className="flex items-center justify-center gap-2 text-emerald-300"><Spinner className="text-emerald-300" /> <span>asset registered successfully</span></div>
-          )}
-          {result && (
-            <pre className="whitespace-pre-wrap break-words text-xs bg-black/40 border border-white/10 rounded-xl p-4">{JSON.stringify(result, null, 2)}</pre>
-          )}
+          {/* Feedback below the card on large screens, wraps under form on mobile */}
+          <div className="lg:col-start-2 lg:row-start-2 space-y-3">
+            {loading && (
+              <div className="flex items-center gap-2 text-white/90"><Spinner /> <span>processing your registration…</span></div>
+            )}
+          </div>
         </div>
       </div>
     </main>

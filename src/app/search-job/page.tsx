@@ -143,10 +143,13 @@ export default function SearchJobPage(){
                     setCommitResponse(json)
                     toast.dismiss()
                     if (!res.ok) throw new Error(json?.error || 'Commit failed')
+                    const txHash = json?.txHash || json?.transactionHash
+                    const txUrl = txHash ? `https://mainnet.num.network/tx/${txHash}` : (json?.explorer || `https://verify.numbersprotocol.io/asset-profile/${activeNid}`)
                     toast.success('Commit submitted', {
+                      description: txHash ? `tx: ${txHash}` : undefined,
                       action: {
-                        label: 'Explorer',
-                        onClick: ()=> window.open(json?.explorer || `https://verify.numbersprotocol.io/asset-profile/${activeNid}`, '_blank')
+                        label: 'Open Tx',
+                        onClick: ()=> window.open(txUrl, '_blank')
                       }
                     })
                   }catch(e:any){

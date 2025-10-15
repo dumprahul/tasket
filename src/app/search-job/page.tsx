@@ -24,7 +24,7 @@ export default function SearchJobPage(){
         const supabase = getSupabaseBrowser()
         const { data, error } = await supabase
           .from('assets')
-          .select('nid, caption, headline, asset_file, asset_file_name, asset_file_mime_type')
+          .select('nid, caption, headline, asset_file, asset_file_name, asset_file_mime_type, uploaded_at, created_at, asset_timestamp_created')
           .order('created_at', { ascending: false })
           .limit(30)
         if (error) throw error
@@ -33,6 +33,7 @@ export default function SearchJobPage(){
           title: row.headline || 'Untitled',
           subtitle: row.caption || '',
           image: row.asset_file || null,
+          createdAt: (row.uploaded_at ? new Date(row.uploaded_at) : (row.created_at ? new Date(row.created_at) : (row.asset_timestamp_created ? new Date(row.asset_timestamp_created * 1000) : null)))
         }))
         setItems(mapped)
       }catch(e:any){
@@ -77,6 +78,9 @@ export default function SearchJobPage(){
                   </div>
                   <div className="p-4 text-white">
                     <h3 className="text-lg font-bold mb-1 truncate">{card.title}</h3>
+                    {card.createdAt && (
+                      <div className="text-xs text-white/70 mb-1">{card.createdAt.toLocaleString()}</div>
+                    )}
                     <p className="text-sm text-white/85 line-clamp-2 min-h-[2.5rem]">{card.subtitle}</p>
                     <div className="pt-4 flex justify-end">
                       <button

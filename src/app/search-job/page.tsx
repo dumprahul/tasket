@@ -123,18 +123,20 @@ export default function SearchJobPage(){
                     const digest = await crypto.subtle.digest('SHA-256', ab)
                     const sha = Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('')
                     const ts = (Date.now()/1000)|0
+                    const payload = {
+                      encodingFormat: commitFile.type || 'image/jpeg',
+                      assetCid: activeNid,
+                      assetTimestampCreated: ts, // ideally: original registered timestamp stored in DB
+                      assetCreator: 'Tasket User',
+                      assetSha256: sha,
+                      commitMessage: commitMsg,
+                      abstract: commitMsg,
+                    }
+                    console.log('Commit payload:', payload)
                     const res = await fetch('/api/commit-asset', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        encodingFormat: commitFile.type || 'image/jpeg',
-                        assetCid: activeNid,
-                        assetTimestampCreated: ts, // ideally: original registered timestamp stored in DB
-                        assetCreator: 'Tasket User',
-                        assetSha256: sha,
-                        commitMessage: commitMsg,
-                        abstract: commitMsg,
-                      })
+                      body: JSON.stringify(payload)
                     })
                     const json = await res.json()
                     console.log('Commit response:', json)
@@ -160,9 +162,7 @@ export default function SearchJobPage(){
                 {submitting ? 'Committing…' : 'Commit'}
               </button>
             </div>
-            {commitResponse && (
-              <pre className="whitespace-pre-wrap break-words text-xs bg-black/40 border border-white/10 rounded-xl p-3">{JSON.stringify(commitResponse, null, 2)}</pre>
-            )}
+            {/* response removed from UI; see console for logs */}
           </div>
         </div>
       )}

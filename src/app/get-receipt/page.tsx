@@ -1,6 +1,7 @@
 'use client'
 import Silk from "@/components/Silk";
 import { useState } from 'react'
+import jsPDF from 'jspdf'
 
 export default function GetReceiptPage(){
   const [nid, setNid] = useState('')
@@ -67,6 +68,55 @@ export default function GetReceiptPage(){
                   )}
                 </article>
               ))}
+            </div>
+          )}
+
+          {!loading && commits.length > 0 && (
+            <div className="pt-6">
+              <button
+                className="rounded-md bg-white text-black font-semibold px-4 py-2"
+                onClick={() => {
+                  const doc = new jsPDF()
+                  const margin = 14
+                  let y = margin
+                  doc.setFont('Helvetica', 'bold')
+                  doc.setFontSize(18)
+                  doc.text('Tasket — Asset Receipt', margin, y)
+                  y += 8
+                  doc.setFontSize(11)
+                  doc.setFont('Helvetica', 'normal')
+                  doc.text(`Nid: ${nid}`, margin, y)
+                  y += 6
+                  doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y)
+                  y += 10
+
+                  commits.forEach((c:any, idx:number) => {
+                    const ts = new Date((c.timestampCreated || c.timestamp || 0) * 1000).toLocaleString()
+                    const title = c.commitMessage || c.actionName || `Commit #${idx+1}`
+                    const summary = c.abstract || c.custom?.payloadCid || ''
+                    const tx = c.transaction?.hash || ''
+
+                    doc.setFont('Helvetica', 'bold')
+                    doc.setFontSize(13)
+                    doc.text(`${idx+1}. ${title}`, margin, y)
+                    y += 6
+                    doc.setFont('Helvetica', 'normal')
+                    doc.setFontSize(10)
+                    const lines = doc.splitTextToSize(`• Time: ${ts}\n• Summary: ${summary}\n${tx ? `• Tx: ${tx}` : ''}`, 182)
+                    lines.forEach((ln:string) => {
+                      if (y > 280) { doc.addPage(); y = margin }
+                      doc.text(ln, margin, y)
+                      y += 5
+                    })
+                    y += 3
+                    if (y > 280) { doc.addPage(); y = margin }
+                  })
+
+                  doc.save(`tasket-receipt-${nid || 'asset'}.pdf`)
+                }}
+              >
+                Download as PDF
+              </button>
             </div>
           )}
         </div>

@@ -15,7 +15,7 @@ export default function SearchJobPage(){
         const supabase = getSupabaseBrowser()
         const { data, error } = await supabase
           .from('assets')
-          .select('nid, caption, headline, asset_file_name, asset_file_mime_type, image_url')
+          .select('nid, caption, headline, asset_file, asset_file_name, asset_file_mime_type')
           .order('created_at', { ascending: false })
           .limit(30)
         if (error) throw error
@@ -23,7 +23,7 @@ export default function SearchJobPage(){
           nid: row.nid,
           title: row.headline || 'Untitled',
           subtitle: row.caption || '',
-          image: row.image_url || null,
+          image: row.asset_file || null,
         }))
         setItems(mapped)
       }catch(e:any){

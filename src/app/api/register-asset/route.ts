@@ -95,8 +95,14 @@ export async function POST(req: NextRequest) {
     try {
       const supabase = getSupabaseServer()
       const uploadedAt = new Date().toISOString()
+
+      // Prefer the Numbers CDN file URL returned by the API response if available
+      const assetFileFromNumbers: string | null =
+        (json && (json.asset_file || json.assetUrl || json.file_url || json.fileUrl)) || null
+
       await supabase.from('assets').insert({
         nid: json?.id || null,
+        asset_file: assetFileFromNumbers,
         asset_file_name: json?.asset_file_name || file.name,
         asset_file_mime_type: json?.asset_file_mime_type || asset_mime_type,
         caption,

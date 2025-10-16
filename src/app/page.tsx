@@ -88,6 +88,7 @@ export default function Home(){
                 verticalDistance={70}
                 delay={5000}
                 pauseOnHover={false}
+                onCardClick={() => {}}
               >
                 
                 <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6">

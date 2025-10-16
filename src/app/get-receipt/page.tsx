@@ -58,16 +58,39 @@ export default function GetReceiptPage(){
 
           {!loading && commits.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {commits.map((c:any, idx:number) => (
-                <article key={idx} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                  <div className="text-sm text-white/70">{new Date((c.timestampCreated || c.timestamp || 0)*1000).toLocaleString()}</div>
-                  <h3 className="text-lg font-bold">{c.commitMessage || c.actionName || 'Commit'}</h3>
-                  <div className="text-white/80 text-sm break-words">{c.abstract || c.custom?.payloadCid || ''}</div>
-                  {c.transaction && c.transaction.hash && (
-                    <a className="text-sky-300 underline text-sm" href={`https://mainnet.num.network/tx/${c.transaction.hash}`} target="_blank" rel="noreferrer">View Tx</a>
-                  )}
-                </article>
-              ))}
+              {commits.map((c:any, idx:number) => {
+                const author = c.author || c.owner || c.identity?.author || c.identity?.name || c.identity || c.account || ''
+                const txHash = c.transaction?.hash || c.txHash || c.hash || ''
+                const explorerURL = c.explorerURL || (txHash ? `https://mainnet.num.network/tx/${txHash}` : '')
+                return (
+                  <article key={idx} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
+                    <div className="text-sm text-white/70">{new Date((c.timestampCreated || c.timestamp || 0)*1000).toLocaleString()}</div>
+                    <h3 className="text-lg font-bold">{c.commitMessage || c.actionName || 'Commit'}</h3>
+                    <div className="text-white/80 text-sm break-words">{c.abstract || c.custom?.payloadCid || ''}</div>
+
+                    <div className="mt-3 space-y-1 text-sm">
+                      {author && (
+                        <div>
+                          <span className="text-white/60">Author: </span>
+                          <span className="text-white/90">{author}</span>
+                        </div>
+                      )}
+                      {txHash && (
+                        <div className="break-words">
+                          <span className="text-white/60">Transaction ID: </span>
+                          <span className="text-white/90 break-all">{txHash}</span>
+                        </div>
+                      )}
+                      {explorerURL && (
+                        <div className="break-words">
+                          <span className="text-white/60">Explorer: </span>
+                          <a className="text-sky-300 underline break-all" href={explorerURL} target="_blank" rel="noreferrer">{explorerURL}</a>
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                )
+              })}
             </div>
           )}
 

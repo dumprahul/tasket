@@ -117,7 +117,9 @@ export default function GetReceiptPage(){
                     const ts = new Date((c.timestampCreated || c.timestamp || 0) * 1000).toLocaleString()
                     const title = c.commitMessage || c.actionName || `Commit #${idx+1}`
                     const summary = c.abstract || c.custom?.payloadCid || ''
-                    const tx = c.transaction?.hash || ''
+                    const author = c.author || c.owner || c.identity?.author || c.identity?.name || c.identity || c.account || ''
+                    const txHash = c.transaction?.hash || c.txHash || c.hash || ''
+                    const explorerURL = c.explorerURL || (txHash ? `https://mainnet.num.network/tx/${txHash}` : '')
 
                     doc.setFont('Helvetica', 'bold')
                     doc.setFontSize(13)
@@ -125,7 +127,15 @@ export default function GetReceiptPage(){
                     y += 6
                     doc.setFont('Helvetica', 'normal')
                     doc.setFontSize(10)
-                    const lines = doc.splitTextToSize(`• Time: ${ts}\n• Summary: ${summary}\n${tx ? `• Tx: ${tx}` : ''}`, 182)
+
+                    const details: string[] = []
+                    details.push(`• Time: ${ts}`)
+                    if (author) details.push(`• Author: ${author}`)
+                    if (summary) details.push(`• Summary: ${summary}`)
+                    if (txHash) details.push(`• Transaction ID: ${txHash}`)
+                    if (explorerURL) details.push(`• Explorer: ${explorerURL}`)
+
+                    const lines = doc.splitTextToSize(details.join('\n'), 182)
                     lines.forEach((ln:string) => {
                       if (y > 280) { doc.addPage(); y = margin }
                       doc.text(ln, margin, y)
